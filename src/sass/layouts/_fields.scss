@@ -1,0 +1,48 @@
+@use "../vars/colors" as colors;
+@use "../vars/radius" as radius;
+
+form {
+  background-color: colors.$bg-main-c;
+  height: fit-content;
+  padding: 1.25rem;
+  min-width: 18.75rem;
+  max-width: 25rem;
+  border-radius: radius.$large-r;
+
+  .form-control {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.625rem;
+
+    label {
+      font-size: 1.125rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.625rem;
+      border-radius: radius.$small-r;
+      border: 0.0625rem solid colors.$border-c;
+      outline-width: 0;
+      margin: 0.1875rem 0;
+      background-color: transparent;
+      color: colors.$text-main-c;
+    }
+  }
+
+  button {
+    padding: 0.8125rem;
+    width: 100%;
+    font-size: 1.125rem;
+    font-weight: 400;
+    text-transform: capitalize;
+    border-radius: radius.$medium-r;
+    background-color: initial;
+    color: colors.$text-main-c;
+    cursor: pointer;
+    border: 0.0625rem solid colors.$border-c;
+    outline-width: 0;
+  }
+}
