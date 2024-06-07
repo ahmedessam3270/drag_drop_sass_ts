@@ -28,6 +28,7 @@ export class Fields extends Base<HTMLFormElement> {
 
     if (this._validateInputsValues(titleValue, descValue)) {
       projectStateInstance.createProject(titleValue, descValue);
+      this._clearInputsValues(titleInput, descriptionInput);
     }
   }
 
@@ -90,5 +91,18 @@ export class Fields extends Base<HTMLFormElement> {
       return false;
     }
     return true;
+  }
+
+  /**
+   * @desc clear inputs values
+   * @param title input : HTMLInputElement
+   * @param desc input : HTMLInputElement
+   */
+  private _clearInputsValues(
+    titleInput: HTMLInputElement,
+    descInput: HTMLInputElement
+  ): void {
+    titleInput.value = "";
+    descInput.value = "";
   }
 }

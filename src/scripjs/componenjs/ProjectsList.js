@@ -7,7 +7,9 @@ Object.defineProperty(exports, "__esModule", {
 exports.ProjectsList = void 0;
 var _ProjectRules = require("../store/ProjectRules.js");
 var _ProjectState = require("../store/ProjectState.js");
+var _projectStatus = require("../utils/projectStatus.js");
 var _Base2 = require("./Base.js");
+var _Project = require("./Project.js");
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
@@ -30,7 +32,8 @@ var ProjectsList = exports.ProjectsList = /*#__PURE__*/function (_Base) {
     _this = _callSuper(this, ProjectsList, ["project-list", "app", "".concat(_status, "-projects"), false]);
     _this.renderProjectsList();
     _ProjectState.projectStateInstance.pushListner(function (projects) {
-      _this._renderProjects(projects);
+      var filteredProjects = _this._filterProjectsBasedOnStatus(projects);
+      _this._renderProjects(filteredProjects);
     });
     return _this;
   }
@@ -44,21 +47,26 @@ var ProjectsList = exports.ProjectsList = /*#__PURE__*/function (_Base) {
     key: "renderProjectsList",
     value: function renderProjectsList() {
       var title = this.element.querySelector(".title");
-      var list = this.element.querySelector("ul");
-      list.classList.add("".concat(this._status, "-list"));
+      var list = this.element.querySelector(".projects-list");
+      list.id = "".concat(this._status, "-list");
       title.textContent = "".concat(this._status, " Projects");
     }
+
+    /**
+     * @desc render all projects in the project list
+     * @param projects and validate with the projectRules
+     */
   }, {
     key: "_renderProjects",
     value: function _renderProjects(projects) {
-      var projectsListElement = document.querySelector(".".concat(this._status, "-list"));
+      var projectsListElement = document.getElementById("".concat(this._status, "-list"));
+      projectsListElement.innerHTML = "";
       var _iterator = _createForOfIteratorHelper(projects),
         _step;
       try {
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
           var project = _step.value;
-          var content = this._createProjectElement(project);
-          projectsListElement.innerHTML += content;
+          new _Project.Project("".concat(this._status, "-list"), project);
         }
       } catch (err) {
         _iterator.e(err);
@@ -66,11 +74,26 @@ var ProjectsList = exports.ProjectsList = /*#__PURE__*/function (_Base) {
         _iterator.f();
       }
     }
+
+    /**
+     * @desc take project rom state and filter that specific project status add them in projects array to render
+     * @param projects : projectRules[]
+     * @returns Projects after => filteredProjects : projectRules[]
+     */
   }, {
-    key: "_createProjectElement",
-    value: function _createProjectElement(project) {
-      var content = "\n    <div class=\"project\" draggable=\"true\">\n    <h2 class=\"project_title\" id=\"project_title\">".concat(project.title, "</h2>\n    <p class=\"project_desc\" id=\"project_desc\">").concat(project.description, "</p>\n    </div>\n    ");
-      return content;
+    key: "_filterProjectsBasedOnStatus",
+    value: function _filterProjectsBasedOnStatus(projects) {
+      var _this2 = this;
+      var filteredProjects = projects.filter(function (project) {
+        if (_this2._status === "Initial") {
+          return project.status === _projectStatus.projectStatus.Initial;
+        } else if (_this2._status === "Active") {
+          return project.status === _projectStatus.projectStatus.Active;
+        } else if (_this2._status === "Finished") {
+          return project.status === _projectStatus.projectStatus.Finished;
+        }
+      });
+      return filteredProjects;
     }
   }]);
 }(_Base2.Base);

@@ -58,6 +58,7 @@ var Fields = exports.Fields = /*#__PURE__*/function (_Base) {
         descValue = _this$_getInputsValue2[1];
       if (this._validateInputsValues(titleValue, descValue)) {
         _ProjectState.projectStateInstance.createProject(titleValue, descValue);
+        this._clearInputsValues(titleInput, descriptionInput);
       }
     }
 
@@ -109,6 +110,18 @@ var Fields = exports.Fields = /*#__PURE__*/function (_Base) {
         return false;
       }
       return true;
+    }
+
+    /**
+     * @desc clear inputs values
+     * @param title input : HTMLInputElement
+     * @param desc input : HTMLInputElement
+     */
+  }, {
+    key: "_clearInputsValues",
+    value: function _clearInputsValues(titleInput, descInput) {
+      titleInput.value = "";
+      descInput.value = "";
     }
   }]);
 }(_Base2.Base);

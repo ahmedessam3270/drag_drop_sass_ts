@@ -1,12 +1,15 @@
 import { ProjectRules } from "../store/ProjectRules.js";
 import { projectStateInstance } from "../store/ProjectState.js";
+import { projectStatus } from "../utils/projectStatus.js";
 import { Base } from "./Base.js";
+import { Project } from "./Project.js";
 export class ProjectsList extends Base<HTMLDivElement> {
   constructor(private _status: "Initial" | "Active" | "Finished") {
     super("project-list", "app", `${_status}-projects`, false);
     this.renderProjectsList();
     projectStateInstance.pushListner((projects: ProjectRules[]) => {
-      this._renderProjects(projects);
+      const filteredProjects = this._filterProjectsBasedOnStatus(projects);
+      this._renderProjects(filteredProjects);
     });
   }
 
@@ -16,28 +19,42 @@ export class ProjectsList extends Base<HTMLDivElement> {
    */
   private renderProjectsList(): void {
     const title = this.element.querySelector(".title")! as HTMLHeadingElement;
-    const list = this.element.querySelector("ul")! as HTMLUListElement;
-    list.classList.add(`${this._status}-list`);
+    const list = this.element.querySelector(
+      ".projects-list"
+    )! as HTMLDivElement;
+    list.id = `${this._status}-list`;
     title.textContent = `${this._status} Projects`;
   }
 
+  /**
+   * @desc render all projects in the project list
+   * @param projects and validate with the projectRules
+   */
   private _renderProjects(projects: ProjectRules[]): void {
-    const projectsListElement = document.querySelector(
-      `.${this._status}-list`
+    const projectsListElement = document.getElementById(
+      `${this._status}-list`
     )! as HTMLDivElement;
+    projectsListElement.innerHTML = "";
     for (const project of projects) {
-      const content = this._createProjectElement(project);
-      projectsListElement.innerHTML += content;
+      new Project(`${this._status}-list`, project);
     }
   }
 
-  private _createProjectElement(project: ProjectRules): string {
-    const content = `
-    <div class="project" draggable="true">
-    <h2 class="project_title" id="project_title">${project.title}</h2>
-    <p class="project_desc" id="project_desc">${project.description}</p>
-    </div>
-    `;
-    return content;
+  /**
+   * @desc take project rom state and filter that specific project status add them in projects array to render
+   * @param projects : projectRules[]
+   * @returns Projects after => filteredProjects : projectRules[]
+   */
+  private _filterProjectsBasedOnStatus(projects: ProjectRules[]) {
+    const filteredProjects = projects.filter((project) => {
+      if (this._status === "Initial") {
+        return project.status === projectStatus.Initial;
+      } else if (this._status === "Active") {
+        return project.status === projectStatus.Active;
+      } else if (this._status === "Finished") {
+        return project.status === projectStatus.Finished;
+      }
+    });
+    return filteredProjects;
   }
 }
