@@ -7,9 +7,17 @@ export class ProjectsList extends Base<HTMLDivElement> {
   constructor(private _status: "Initial" | "Active" | "Finished") {
     super("project-list", "app", `${_status}-projects`, false);
     this.renderProjectsList();
+
+    // when refreshing the page get the projects from localStorage and render them
+    if (JSON.parse(localStorage.getItem("projects")!)) {
+      const localStorageProjects = JSON.parse(
+        localStorage.getItem("projects")!
+      );
+      this._showProjectInDOM(localStorageProjects);
+    }
+
     projectStateInstance.pushListner((projects: ProjectRules[]) => {
-      const filteredProjects = this._filterProjectsBasedOnStatus(projects);
-      this._renderProjects(filteredProjects);
+      this._showProjectInDOM(projects);
     });
   }
 
@@ -24,6 +32,15 @@ export class ProjectsList extends Base<HTMLDivElement> {
     )! as HTMLDivElement;
     list.id = `${this._status}-list`;
     title.textContent = `${this._status} Projects`;
+  }
+
+  /**
+   * @desc show projects in the DOM after filtering the projects based on status
+   * @param projects : ProjectRules[]
+   */
+  private _showProjectInDOM(projects: ProjectRules[]): void {
+    const filteredProjects = this._filterProjectsBasedOnStatus(projects);
+    this._renderProjects(filteredProjects);
   }
 
   /**

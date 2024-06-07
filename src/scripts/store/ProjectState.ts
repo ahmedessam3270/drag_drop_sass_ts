@@ -1,11 +1,20 @@
 import { projectStatus } from "../utils/projectStatus.js";
+import { ListnerType } from "./ListnerType.js";
 import { ProjectRules } from "./ProjectRules.js";
 
 class ProjectState {
   private static _instance: ProjectState;
+  private _listeners: ListnerType[] = [];
   private _projects: ProjectRules[] = [];
-  private _listeners: Function[] = [];
-  constructor() {}
+  private _localStoragePrevProjects: ProjectRules[] = localStorage.getItem(
+    "projects"
+  )
+    ? JSON.parse(localStorage.getItem("projects")!)
+    : [];
+  constructor() {
+    // when refresh the page send localStorage projects to projects state
+    this._projects = this._localStoragePrevProjects;
+  }
   /**
    * @desc create a single tone instance of the ProjectState class
    */
@@ -31,13 +40,14 @@ class ProjectState {
     );
     this._projects.push(newProject);
     this._runListners();
+    localStorage.setItem("projects", JSON.stringify(this._projects));
   }
 
   /**
    * @desc pushing listners in array
    * @param listner : Function
    */
-  public pushListner(listner: Function) {
+  public pushListner(listner: ListnerType) {
     this._listeners.push(listner);
   }
 
