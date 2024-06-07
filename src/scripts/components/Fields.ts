@@ -1,3 +1,4 @@
+import { projectStateInstance } from "../store/ProjectState.js";
 import {
   assignValidateInputs,
   handleValidationErrors,
@@ -25,7 +26,9 @@ export class Fields extends Base<HTMLFormElement> {
       descriptionInput
     );
 
-    this._validateInputsValues(titleValue, descValue);
+    if (this._validateInputsValues(titleValue, descValue)) {
+      projectStateInstance.createProject(titleValue, descValue);
+    }
   }
 
   /**
@@ -69,10 +72,22 @@ export class Fields extends Base<HTMLFormElement> {
     const titleErrorMsg = handleValidationErrors(titleInputRule);
     const descriptionErrorMsg = handleValidationErrors(descriptionInputRule);
 
+    // target popup elements
+    const popupContainer = document.getElementById(
+      "popup_container"
+    )! as HTMLDivElement;
+    const popupDesc = document.getElementById(
+      "desc_popup"
+    )! as HTMLParagraphElement;
+
     if (titleErrorMsg.length > 0) {
-      alert(titleErrorMsg);
+      popupContainer.classList.add("visible_popup");
+      popupDesc.textContent = titleErrorMsg;
+      return false;
     } else if (descriptionErrorMsg.length > 0) {
-      alert(descriptionErrorMsg);
+      popupContainer.classList.add("visible_popup");
+      popupDesc.textContent = descriptionErrorMsg;
+      return false;
     }
     return true;
   }

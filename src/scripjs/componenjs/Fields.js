@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.Fields = void 0;
+var _ProjectState = require("../store/ProjectState.js");
 var _validation_helpers = require("../utils/validation/validation_helpers.js");
 var _Base2 = require("./Base.js");
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
@@ -55,7 +56,9 @@ var Fields = exports.Fields = /*#__PURE__*/function (_Base) {
         _this$_getInputsValue2 = _slicedToArray(_this$_getInputsValue, 2),
         titleValue = _this$_getInputsValue2[0],
         descValue = _this$_getInputsValue2[1];
-      this._validateInputsValues(titleValue, descValue);
+      if (this._validateInputsValues(titleValue, descValue)) {
+        _ProjectState.projectStateInstance.createProject(titleValue, descValue);
+      }
     }
 
     /**
@@ -92,10 +95,18 @@ var Fields = exports.Fields = /*#__PURE__*/function (_Base) {
         descriptionInputRule = _assignValidateInputs2[1];
       var titleErrorMsg = (0, _validation_helpers.handleValidationErrors)(titleInputRule);
       var descriptionErrorMsg = (0, _validation_helpers.handleValidationErrors)(descriptionInputRule);
+
+      // target popup elements
+      var popupContainer = document.getElementById("popup_container");
+      var popupDesc = document.getElementById("desc_popup");
       if (titleErrorMsg.length > 0) {
-        alert(titleErrorMsg);
+        popupContainer.classList.add("visible_popup");
+        popupDesc.textContent = titleErrorMsg;
+        return false;
       } else if (descriptionErrorMsg.length > 0) {
-        alert(descriptionErrorMsg);
+        popupContainer.classList.add("visible_popup");
+        popupDesc.textContent = descriptionErrorMsg;
+        return false;
       }
       return true;
     }
