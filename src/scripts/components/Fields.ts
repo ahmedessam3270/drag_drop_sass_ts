@@ -1,3 +1,4 @@
+import { autoBind } from "../decorators/autobind.js";
 import { projectStateInstance } from "../store/ProjectState.js";
 import {
   assignValidateInputs,
@@ -12,12 +13,13 @@ export class Fields extends Base<HTMLFormElement> {
   }
 
   private _addProject(): void {
-    this.element.addEventListener("submit", this._handleAddProject.bind(this));
+    this.element.addEventListener("submit", this._handleAddProject);
   }
 
   /**
    * @desc handle add projects
    */
+  @autoBind
   private _handleAddProject(e: Event): void {
     e.preventDefault();
     const [titleInput, descriptionInput] = this._targetInputs();

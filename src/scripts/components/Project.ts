@@ -1,3 +1,4 @@
+import { autoBind } from "../decorators/autobind.js";
 import { ProjectRules } from "../store/ProjectRules.js";
 import { projectStateInstance } from "../store/ProjectState.js";
 import { Base } from "./Base.js";
@@ -32,12 +33,17 @@ export class Project extends Base<HTMLDivElement> {
     const deleteButton = this.element.querySelector(
       ".delete"
     )! as HTMLButtonElement;
-    deleteButton.addEventListener("click", this._deleteHandler.bind(this));
+    deleteButton.addEventListener("click", this._handleDeleteProject);
   }
 
-  private _deleteHandler(): void {
+  /**
+   * @desc delete handler and checking confirm delete? get function to delete this project
+   */
+  @autoBind
+  private _handleDeleteProject(): void {
     if (confirm("Are you sure that you want to delete this project?")) {
       projectStateInstance.deleteProject(this._project.id);
     }
+    return;
   }
 }
