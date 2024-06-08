@@ -56,6 +56,18 @@ class ProjectState {
     localStorage.setItem("projects", JSON.stringify(this._projects));
   }
 
+  public changeProjectStatus(
+    projectId: string,
+    newStatus: projectStatus
+  ): void {
+    const project = this._projects.find((proj) => proj.id === projectId);
+    if (project && project.status !== newStatus) {
+      project!.status = newStatus;
+      this._runListners();
+      localStorage.setItem("projects", JSON.stringify(this._projects));
+    }
+  }
+
   /**
    * @desc pushing listners in array
    * @param listner : Function

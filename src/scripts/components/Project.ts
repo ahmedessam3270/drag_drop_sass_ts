@@ -10,6 +10,7 @@ export class Project extends Base<HTMLDivElement> {
     this._project = project;
     this._renderProject();
     this._targetDeleteButtonAndListenToIt();
+    this._runDragging();
   }
 
   /**
@@ -45,5 +46,28 @@ export class Project extends Base<HTMLDivElement> {
       projectStateInstance.deleteProject(this._project.id);
     }
     return;
+  }
+
+  /**
+   * @desc run dragging on the project: dragStart, dragEnd
+   */
+  private _runDragging(): void {
+    this.element.addEventListener("dragstart", this._handleDragStart);
+    this.element.addEventListener("dragend", this._handleDragEnd);
+  }
+
+  /**
+   * @desc when initializing the dragging event setting the data in dataTransfer text/plain
+   * @param e DragEvent
+   */
+  @autoBind
+  private _handleDragStart(e: DragEvent): void {
+    this.element.style.opacity = ".6";
+    e.dataTransfer!.setData("text/plain", this._project.id);
+    e.dataTransfer!.effectAllowed = "move";
+  }
+  @autoBind
+  private _handleDragEnd(e: DragEvent): void {
+    this.element.style.opacity = "1";
   }
 }

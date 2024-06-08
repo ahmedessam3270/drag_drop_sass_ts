@@ -1,3 +1,4 @@
+import { autoBind } from "../decorators/autobind.js";
 import { ProjectRules } from "../store/ProjectRules.js";
 import { projectStateInstance } from "../store/ProjectState.js";
 import { projectStatus } from "../utils/projectStatus.js";
@@ -19,6 +20,7 @@ export class ProjectsList extends Base<HTMLDivElement> {
     projectStateInstance.pushListner((projects: ProjectRules[]) => {
       this._showProjectInDOM(projects);
     });
+    this._runDragging();
   }
 
   /**
@@ -73,5 +75,34 @@ export class ProjectsList extends Base<HTMLDivElement> {
       }
     });
     return filteredProjects;
+  }
+
+  /**
+   * @desc run dragging on the project list : dragover, drop
+   */
+  private _runDragging(): void {
+    this.element.addEventListener("dragover", this._handleDragOver);
+    this.element.addEventListener("drop", this._handleDrop);
+  }
+
+  /**
+   * @desc prevent default behavior to allow dragging projects and moving it to another project list
+   */
+  @autoBind
+  private _handleDragOver(e: DragEvent): void {
+    e.preventDefault();
+  }
+  @autoBind
+  private _handleDrop(e: DragEvent): void {
+    const projectId = e.dataTransfer!.getData("text/plain");
+    const newStatus =
+      (this.element.id === "Initial-projects" && projectStatus.Initial) ||
+      (this.element.id === "Active-projects" && projectStatus.Active) ||
+      (this.element.id === "Finished-projects" && projectStatus.Finished);
+
+    if (newStatus) {
+      // to make sure that newStatus is not false
+      projectStateInstance.changeProjectStatus(projectId, newStatus);
+    }
   }
 }

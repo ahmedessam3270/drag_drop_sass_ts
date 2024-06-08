@@ -31,10 +31,16 @@ var ProjectsList = exports.ProjectsList = /*#__PURE__*/function (_Base) {
     _classCallCheck(this, ProjectsList);
     _this = _callSuper(this, ProjectsList, ["project-list", "app", "".concat(_status, "-projects"), false]);
     _this.renderProjectsList();
+
+    // when refreshing the page get the projects from localStorage and render them
+    if (JSON.parse(localStorage.getItem("projects"))) {
+      var localStorageProjects = JSON.parse(localStorage.getItem("projects"));
+      _this._showProjectInDOM(localStorageProjects);
+    }
     _ProjectState.projectStateInstance.pushListner(function (projects) {
-      var filteredProjects = _this._filterProjectsBasedOnStatus(projects);
-      _this._renderProjects(filteredProjects);
+      _this._showProjectInDOM(projects);
     });
+    _this._runDragging();
     return _this;
   }
 
@@ -50,6 +56,17 @@ var ProjectsList = exports.ProjectsList = /*#__PURE__*/function (_Base) {
       var list = this.element.querySelector(".projects-list");
       list.id = "".concat(this._status, "-list");
       title.textContent = "".concat(this._status, " Projects");
+    }
+
+    /**
+     * @desc show projects in the DOM after filtering the projects based on status
+     * @param projects : ProjectRules[]
+     */
+  }, {
+    key: "_showProjectInDOM",
+    value: function _showProjectInDOM(projects) {
+      var filteredProjects = this._filterProjectsBasedOnStatus(projects);
+      this._renderProjects(filteredProjects);
     }
 
     /**
@@ -95,5 +112,21 @@ var ProjectsList = exports.ProjectsList = /*#__PURE__*/function (_Base) {
       });
       return filteredProjects;
     }
+
+    /**
+     * @desc run dragging on the project list : dragover, drop
+     */
+  }, {
+    key: "_runDragging",
+    value: function _runDragging() {
+      this.element.addEventListener("dragover", this._handleDragOver);
+      this.element.addEventListener("drop", this._handleDrop);
+    }
+  }, {
+    key: "_handleDragOver",
+    value: function _handleDragOver() {}
+  }, {
+    key: "_handleDrop",
+    value: function _handleDrop() {}
   }]);
 }(_Base2.Base);

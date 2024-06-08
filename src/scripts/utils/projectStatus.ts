@@ -1,5 +1,5 @@
 export enum projectStatus {
-  Initial,
-  Active,
-  Finished,
+  Initial = "Initial",
+  Active = "Active",
+  Finished = "Finished",
 }

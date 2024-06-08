@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.projectStateInstance = void 0;
 var _projectStatus = require("../utils/projectStatus.js");
+var _ListnerType = require("./ListnerType.js");
 var _ProjectRules = require("./ProjectRules.js");
 var _ProjectState;
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
@@ -24,8 +25,11 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 var ProjectState = /*#__PURE__*/function () {
   function ProjectState() {
     _classCallCheck(this, ProjectState);
-    _defineProperty(this, "_projects", []);
     _defineProperty(this, "_listeners", []);
+    _defineProperty(this, "_projects", []);
+    _defineProperty(this, "_localStoragePrevProjects", localStorage.getItem("projects") ? JSON.parse(localStorage.getItem("projects")) : []);
+    // when refresh the page send localStorage projects to projects state
+    this._projects = this._localStoragePrevProjects;
   }
   /**
    * @desc create a single tone instance of the ProjectState class
@@ -42,6 +46,34 @@ var ProjectState = /*#__PURE__*/function () {
       var newProject = new _ProjectRules.ProjectRules(Math.random().toString(), title, description, _projectStatus.projectStatus.Initial);
       this._projects.push(newProject);
       this._runListners();
+      localStorage.setItem("projects", JSON.stringify(this._projects));
+    }
+
+    /**
+     * @desc delete project from the state on both localstorage and render the changes to the DOM
+     * @param projectId : string
+     */
+  }, {
+    key: "deleteProject",
+    value: function deleteProject(projectId) {
+      var projectsAfterDeletion = this._projects.filter(function (proj) {
+        return proj.id !== projectId;
+      });
+      this._projects = projectsAfterDeletion;
+      this._runListners();
+      localStorage.setItem("projects", JSON.stringify(this._projects));
+    }
+  }, {
+    key: "changeProjectStatus",
+    value: function changeProjectStatus(projectId, newStatus) {
+      var project = this._projects.find(function (proj) {
+        return proj.id === projectId;
+      });
+      if (project && project.status !== newStatus) {
+        project.status = newStatus;
+        this._runListners();
+        localStorage.setItem("projects", JSON.stringify(this._projects));
+      }
     }
 
     /**
