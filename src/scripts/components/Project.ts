@@ -1,4 +1,5 @@
 import { ProjectRules } from "../store/ProjectRules.js";
+import { projectStateInstance } from "../store/ProjectState.js";
 import { Base } from "./Base.js";
 
 export class Project extends Base<HTMLDivElement> {
@@ -7,6 +8,7 @@ export class Project extends Base<HTMLDivElement> {
     super("project-item", projectListId, project.id, false);
     this._project = project;
     this._renderProject();
+    this._targetDeleteButtonAndListenToIt();
   }
 
   /**
@@ -21,5 +23,21 @@ export class Project extends Base<HTMLDivElement> {
     )! as HTMLParagraphElement;
     titleEl.textContent = this._project.title;
     descEl.textContent = this._project.description;
+  }
+
+  /**
+   * @desc target the delete button and adding the delete handler to it
+   */
+  private _targetDeleteButtonAndListenToIt(): void {
+    const deleteButton = this.element.querySelector(
+      ".delete"
+    )! as HTMLButtonElement;
+    deleteButton.addEventListener("click", this._deleteHandler.bind(this));
+  }
+
+  private _deleteHandler(): void {
+    if (confirm("Are you sure that you want to delete this project?")) {
+      projectStateInstance.deleteProject(this._project.id);
+    }
   }
 }

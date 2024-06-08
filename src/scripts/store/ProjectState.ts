@@ -44,6 +44,19 @@ class ProjectState {
   }
 
   /**
+   * @desc delete project from the state on both localstorage and render the changes to the DOM
+   * @param projectId : string
+   */
+  public deleteProject(projectId: string): void {
+    const projectsAfterDeletion = this._projects.filter(
+      (proj: ProjectRules) => proj.id !== projectId
+    );
+    this._projects = projectsAfterDeletion;
+    this._runListners();
+    localStorage.setItem("projects", JSON.stringify(this._projects));
+  }
+
+  /**
    * @desc pushing listners in array
    * @param listner : Function
    */
